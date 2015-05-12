@@ -1,86 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <!--Latitude-->
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dip"
-        android:orientation="horizontal" >
+        android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/TextView01"
+            android:id="@+id/LatView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
             android:layout_marginRight="5dip"
-            android:text="Latitude: "
-            android:textSize="20dip" >
+            android:layout_marginLeft="5dip"
+            android:text="Lat: "
+            android:textSize="15dip" >
         </TextView>
 
         <TextView
-            android:id="@+id/TextView02"
+            android:id="@+id/LatValView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="unknown"
-            android:textSize="20dip" >
+            android:textSize="15dip" >
         </TextView>
     </LinearLayout>
-
+<!--Longitude-->
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/TextView03"
+            android:id="@+id/LngView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
             android:layout_marginRight="5dip"
-            android:text="Longitute: "
-            android:textSize="20dip" >
+            android:layout_marginLeft="5dip"
+            android:text="Lng: "
+            android:textSize="15dip" >
         </TextView>
 
         <TextView
-            android:id="@+id/TextView04"
+            android:id="@+id/LngValView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="unknown"
-            android:textSize="20dip" >
+            android:textSize="15dip" >
         </TextView>
-        
-        <LinearLayout
-        android:layout_height="wrap_content"
+    </LinearLayout>
+<!--Speed-->
+    <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content" >
 
-        <EditText
-            android:id="@+id/message"
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:hint="Message"
-            android:inputType="textShortMessage|textMultiLine|textCapSentences"/>
-
-        <Button
-            android:layout_height="wrap_content"
+        <TextView
+            android:id="@+id/SpeedView"
             android:layout_width="wrap_content"
-            android:layout_gravity="bottom"
-            android:text="Send"
-            android:onClick="sendMessage"/>
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dip"
+            android:layout_marginLeft="5dip"
+            android:text="Speed: "
+            android:textSize="15dip" >
+        </TextView>
 
+        <TextView
+            android:id="@+id/SpeedValView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="unknown"
+            android:textSize="15dip" >
+        </TextView>
     </LinearLayout>
-        
+
+    <!--Heading-->
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/HeadingView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dip"
+            android:layout_marginLeft="5dip"
+            android:text="Heading: "
+            android:textSize="15dip" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/HeadingValView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="unknown"
+            android:textSize="15dip" >
+        </TextView>
     </LinearLayout>
+
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
           android:id="@+id/map"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:name="com.google.android.gms.maps.SupportMapFragment"/>
+          android:name="com.google.android.gms.maps.SupportMapFragment"
+    tools:layout="@layout/activity_main" />
     
 </LinearLayout> 
 

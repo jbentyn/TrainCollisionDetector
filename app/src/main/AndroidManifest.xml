@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.bentyn"
+    package="com.bentyn.traincoll.android"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -8,7 +8,7 @@
         android:minSdkVersion="14"
         android:targetSdkVersion="21" />
  <permission
-        android:name="com.bentyn.permission.MAPS_RECEIVE"
+        android:name="com.android.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
  
     <uses-permission android:name="android.permission.INTERNET" />
@@ -27,7 +27,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.bentyn.MainActivity"
+            android:name="com.bentyn.traincoll.android.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +39,7 @@
         <!-- Google maps API -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCKexuWx_Q1Ql36MTsmkmlGMK3V4cTilAI" />
+            android:value="AIzaSyByBhWmRBGJv-xJcCcjhXJmJZ6BvAESFwI" />
         <!-- Google Play services -->
         <meta-data
             android:name="com.google.android.gms.version"
