@@ -1,5 +1,6 @@
 package com.bentyn.traincoll.android;
 
+import com.bentyn.traincoll.android.map.TrainMarkerController;
 import com.bentyn.traincoll.commons.communication.Message;
 import com.bentyn.traincoll.commons.communication.MessageSerializer;
 import com.bentyn.traincoll.commons.data.EventData;
@@ -34,6 +35,7 @@ public class MainModule {
     public MainActivity getMainActivity(){
         return mainActivity;
     }
+
     @Provides
     public Gson provideGson(){
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -42,6 +44,10 @@ public class MainModule {
         gsonBuilder.registerTypeAdapter(TrainData.class, new TrainDataSerializer<TrainData>(TrainData.class));
         return gsonBuilder.create();
     }
-
+    @Provides
+    @Singleton
+    public TrainMarkerController provideTrainMarkerController(){
+        return new TrainMarkerController();
+    }
 
 }

@@ -1,15 +1,19 @@
 package com.bentyn.traincoll.android;
 
 import com.bentyn.traincoll.android.communication.MessageController;
+import com.bentyn.traincoll.android.map.TrainMarker;
+import com.bentyn.traincoll.android.map.TrainMarkerController;
 import com.bentyn.traincoll.commons.communication.MessageType;
 import com.bentyn.traincoll.commons.data.TrainData;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -20,6 +24,12 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Handler;
 
 import javax.inject.Inject;
 
@@ -38,9 +48,16 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 	private ObjectGraph objectGraph;
 	@Inject
 	MessageController messageController;
+	@Inject
+	TrainMarkerController markerController;
+
+
 
 	private TrainData train = new TrainData();
-	private static final String TRAIN_ID="TRAIN_A";
+	public static final String TRAIN_ID="TRAIN_A";
+	public static final int MARKER_COLOR= Color.RED;
+	public static final double COLLISION_RANGE = 1;
+	public static final int REMOVE_INTERVAL=10000;
 
 	private void connectToWebSocket() {
 
@@ -73,6 +90,7 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 
 		connectToWebSocket();
 		initTrain();
+		initRemoveTask();
 
 		SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 		googleMap = supportMapFragment.getMap();
@@ -102,7 +120,7 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 		locationManager.requestLocationUpdates(provider, 400, 1, this);
 	}
 
-	/* Remove the locationlistener updates when Activity is paused */
+	/* Remove the location listener updates when Activity is paused */
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -116,7 +134,7 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 		train.setLongitude(location.getLongitude());
 		train.setSpeed(location.getSpeed());
 		train.setHeading(location.getBearing());
-		messageController.sendMessage(MessageType.POSITION_UPDATE,train);
+		messageController.sendMessage(MessageType.POSITION_UPDATE, train);
 
 		// set Text values
 		latituteField.setText(String.valueOf(location.getLatitude()));
@@ -124,11 +142,26 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 		speedField.setText(String.valueOf(location.getSpeed()));
 		headingField.setText(String.valueOf(location.getBearing()));
 		// set Map markers
-		LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-		googleMap.clear();
-		googleMap.addMarker(new MarkerOptions().position(latLng));
-		googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(51.680565302088105, 19.34439182281494)));
+		markerController.insertOrUpdate(train,googleMap,this);
+
+		googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(train.getLatitude(),train.getLongitude())));
 		googleMap.animateCamera(CameraUpdateFactory.zoomTo(14));
+	}
+	// removing trains that are not in range
+	public void initRemoveTask() {
+		Timer timer = new Timer();
+		TimerTask timerTask = new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					markerController.removeOutOfRange(train,COLLISION_RANGE);
+
+				} catch (Exception e) {
+
+				}
+			}
+		};
+		timer.schedule(timerTask, 0, REMOVE_INTERVAL);
 	}
 
 	@Override
@@ -139,15 +172,13 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		Toast.makeText(this, "Enabled new provider " + provider,
-				Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Enabled new provider " + provider,Toast.LENGTH_SHORT).show();
 
 	}
 
 	@Override
 	public void onProviderDisabled(String provider) {
-		Toast.makeText(this, "Disabled provider " + provider,
-				Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Disabled provider " + provider,Toast.LENGTH_SHORT).show();
 	}
 
 	public TrainData getTrain() {
@@ -156,5 +187,9 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 
 	public void setTrain(TrainData train) {
 		this.train = train;
+	}
+
+	public GoogleMap getGoogleMap() {
+		return googleMap;
 	}
 }

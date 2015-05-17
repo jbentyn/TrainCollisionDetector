@@ -22,10 +22,9 @@ public class MessageController {
     private WebSocketConnection connection;
     private Gson gson;
     private MessageHandler messageHandler;
-
-
-
     public final static String WS_URI = "ws://10.0.2.2:8080/TrainCollServer/collision";
+
+
     @Inject
     public MessageController(MessageHandler messageHandler,Gson gson) {
         this.messageHandler = messageHandler;
@@ -43,7 +42,6 @@ public class MessageController {
             Message message = new Message();
             message.setData(gson.toJsonTree(data));
             message.setType(type);
-            System.out.println(message);
             connection.sendTextMessage(gson.toJson(message));
             Log.d(TAG, "Message send: " + message.toString());
         }else{

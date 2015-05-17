@@ -40,4 +40,5 @@ dependencies {
     compile 'com.bentyn.traincoll:TrainCollCommons:1.0.0'
     compile 'com.squareup.dagger:dagger:1.2.+'
     provided 'com.squareup.dagger:dagger-compiler:1.2.+'
+    compile 'com.google.maps.android:android-maps-utils:0.3+'
 }
