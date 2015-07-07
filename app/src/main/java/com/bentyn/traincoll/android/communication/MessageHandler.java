@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.bentyn.traincoll.android.MainActivity;
 import com.bentyn.traincoll.android.map.TrainMarkerController;
+import com.bentyn.traincoll.android.train.TrainController;
 import com.bentyn.traincoll.commons.communication.Message;
 import com.bentyn.traincoll.commons.communication.MessageType;
 import com.bentyn.traincoll.commons.data.EventData;
@@ -25,20 +26,22 @@ public class MessageHandler extends WebSocketHandler{
     private Gson gson;
     MessageController messageController;
     TrainMarkerController markerController;
+    TrainController trainController;
 
     private boolean open =false;
     @Inject
-    public MessageHandler(MainActivity mainActivity,Gson gson,TrainMarkerController markerController) {
+    public MessageHandler(MainActivity mainActivity,Gson gson,TrainMarkerController markerController,TrainController trainController) {
         this.mainActivity = mainActivity;
         this.gson=gson;
         this.markerController = markerController;
+        this.trainController=trainController;
     }
 
     @Override
     public void onOpen() {
         // send position_update
         open =true;
-        messageController.sendMessage(MessageType.POSITION_UPDATE,mainActivity.getTrain());
+        messageController.sendMessage(MessageType.POSITION_UPDATE,trainController.getMyPosition());
         super.onOpen();
     }
 
@@ -54,10 +57,19 @@ public class MessageHandler extends WebSocketHandler{
                 TrainData train = gson.fromJson(message.getData(), TrainData.class);
 
                 Log.i(TAG, "Train " + train.getId() + " position update was recived");
+                // TODO ADD COLLISION DETECTION HERE
+                trainController.insertOrUpdate(train);
+                boolean isCollision = trainController.checkForCollision(train.getId());
+                if (isCollision){
+                    EventData collisionEventData = new EventData();
+                    collisionEventData.setPriority("HIGH");
+                    collisionEventData.setText("Collision detected: " + train.getId() + " and " + TrainController.TRAIN_ID);
+
+                    messageController.sendMessage(MessageType.EVENT, collisionEventData);
+                    showEvent(collisionEventData);
+                }
                 // show updated train position on map
                 markerController.insertOrUpdate(train,mainActivity.getGoogleMap(),mainActivity);
-
-                // TODO ADD COLLISION DETECTION HERE
                 break;
             case EVENT:
                 EventData event =  gson.fromJson(message.getData(),EventData.class);

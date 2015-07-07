@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.bentyn.traincoll.android"
-        minSdkVersion 14
+        minSdkVersion 21
         targetSdkVersion 21
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_7

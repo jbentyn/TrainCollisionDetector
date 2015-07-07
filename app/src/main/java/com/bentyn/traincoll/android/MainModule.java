@@ -1,6 +1,7 @@
 package com.bentyn.traincoll.android;
 
 import com.bentyn.traincoll.android.map.TrainMarkerController;
+import com.bentyn.traincoll.android.train.TrainController;
 import com.bentyn.traincoll.commons.communication.Message;
 import com.bentyn.traincoll.commons.communication.MessageSerializer;
 import com.bentyn.traincoll.commons.data.EventData;
@@ -49,5 +50,9 @@ public class MainModule {
     public TrainMarkerController provideTrainMarkerController(){
         return new TrainMarkerController();
     }
-
+    @Provides
+    @Singleton
+    public TrainController provideTrainController(){
+        return new TrainController();
+    }
 }

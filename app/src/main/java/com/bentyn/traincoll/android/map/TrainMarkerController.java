@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.util.Log;
 
 import com.bentyn.traincoll.android.MainActivity;
+import com.bentyn.traincoll.android.train.TrainController;
 import com.bentyn.traincoll.commons.data.TrainData;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -40,7 +41,7 @@ public class TrainMarkerController {
 
             TrainMarker trainMarker = new TrainMarker();
             trainMarker.setTrainData(train);
-            if (train.getId().equals(MainActivity.TRAIN_ID)){
+            if (train.getId().equals(TrainController.TRAIN_ID)){
                 trainMarker.setColor(MainActivity.MARKER_COLOR);
             }else {
                 trainMarker.setColor(randomColor());

@@ -3,6 +3,7 @@ package com.bentyn.traincoll.android;
 import com.bentyn.traincoll.android.communication.MessageController;
 import com.bentyn.traincoll.android.map.TrainMarker;
 import com.bentyn.traincoll.android.map.TrainMarkerController;
+import com.bentyn.traincoll.android.train.TrainController;
 import com.bentyn.traincoll.commons.communication.MessageType;
 import com.bentyn.traincoll.commons.data.TrainData;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,13 +51,13 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 	MessageController messageController;
 	@Inject
 	TrainMarkerController markerController;
+	@Inject
+	TrainController trainController;
 
 
 
-	private TrainData train = new TrainData();
-	public static final String TRAIN_ID="TRAIN_A";
-	public static final int MARKER_COLOR= Color.RED;
-	public static final double COLLISION_RANGE = 1;
+	public static final int MARKER_COLOR= Color.YELLOW;
+	public static final double COLLISION_RANGE = 10000;
 	public static final int REMOVE_INTERVAL=10000;
 
 	private void connectToWebSocket() {
@@ -71,7 +72,7 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 	}
 
 	private void initTrain(){
-		this.train.setId(TRAIN_ID);
+
 	}
 	/** Called when the activity is first created. */
 
@@ -130,17 +131,18 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 	@Override
 	public void onLocationChanged(Location location) {
 		// send position update
+		TrainData train = new TrainData();
 		train.setLatitude(location.getLatitude());
 		train.setLongitude(location.getLongitude());
 		train.setSpeed(location.getSpeed());
 		train.setHeading(location.getBearing());
+		train=trainController.addMyPosition(train);
 		messageController.sendMessage(MessageType.POSITION_UPDATE, train);
-
 		// set Text values
 		latituteField.setText(String.valueOf(location.getLatitude()));
 		longitudeField.setText(String.valueOf(location.getLongitude()));
-		speedField.setText(String.valueOf(location.getSpeed()));
-		headingField.setText(String.valueOf(location.getBearing()));
+		speedField.setText(String.valueOf(train.getSpeed()));
+		headingField.setText(String.valueOf(train.getHeading()));
 		// set Map markers
 		markerController.insertOrUpdate(train,googleMap,this);
 
@@ -154,7 +156,7 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 			@Override
 			public void run() {
 				try {
-					markerController.removeOutOfRange(train,COLLISION_RANGE);
+					markerController.removeOutOfRange(trainController.getMyPosition(),COLLISION_RANGE);
 
 				} catch (Exception e) {
 
@@ -179,14 +181,6 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 	@Override
 	public void onProviderDisabled(String provider) {
 		Toast.makeText(this, "Disabled provider " + provider,Toast.LENGTH_SHORT).show();
-	}
-
-	public TrainData getTrain() {
-		return train;
-	}
-
-	public void setTrain(TrainData train) {
-		this.train = train;
 	}
 
 	public GoogleMap getGoogleMap() {
