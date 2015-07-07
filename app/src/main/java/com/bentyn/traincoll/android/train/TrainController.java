@@ -4,7 +4,9 @@ import com.bentyn.traincoll.commons.algorithms.AbstractCDAlgorithm;
 import com.bentyn.traincoll.commons.algorithms.BasicCDAlgorithm;
 import com.bentyn.traincoll.commons.algorithms.FixedSizeQueue;
 import com.bentyn.traincoll.commons.data.TrainData;
+import com.bentyn.traincoll.commons.utils.GeoUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,7 +34,11 @@ public class TrainController {
         trainsData.remove(trainId);
     }
 
-
+    public void remove (List<String> toRemove){
+        for (String id:toRemove){
+            remove(id);
+        }
+    }
     public FixedSizeQueue <TrainData> getDataForTrain(String trainId){
         return trainsData.get(trainId);
     }
@@ -44,7 +50,17 @@ public class TrainController {
 
     public TrainData addMyPosition(TrainData train){
         train.setId(TRAIN_ID);
-        //TODO calculate heading and speed
+        double heading=0,speed=0;
+        if (!myPositions.isEmpty()){
+            TrainData prevPosition = getMyPosition();
+            double distance=GeoUtils.distFrom(prevPosition.getLatitude(), prevPosition.getLongitude(), train.getLatitude(), train.getLongitude());
+            long timeDiff=train.getTimestamp()-prevPosition.getTimestamp();
+            speed=GeoUtils.speed(distance,timeDiff);
+            //TODO Heading from magnetic field?
+            heading=GeoUtils.heading(prevPosition.getLatitude(), prevPosition.getLongitude(), train.getLatitude(), train.getLongitude());
+        }
+        train.setSpeed(speed);
+        train.setHeading(heading);
         myPositions.add(train);
         return train;
     }

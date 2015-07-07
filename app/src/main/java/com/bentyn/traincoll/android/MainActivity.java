@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -134,13 +135,12 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 		TrainData train = new TrainData();
 		train.setLatitude(location.getLatitude());
 		train.setLongitude(location.getLongitude());
-		train.setSpeed(location.getSpeed());
-		train.setHeading(location.getBearing());
+		train.setTimestamp(System.currentTimeMillis());
 		train=trainController.addMyPosition(train);
 		messageController.sendMessage(MessageType.POSITION_UPDATE, train);
 		// set Text values
-		latituteField.setText(String.valueOf(location.getLatitude()));
-		longitudeField.setText(String.valueOf(location.getLongitude()));
+		latituteField.setText(String.valueOf(train.getLatitude()));
+		longitudeField.setText(String.valueOf(train.getLongitude()));
 		speedField.setText(String.valueOf(train.getSpeed()));
 		headingField.setText(String.valueOf(train.getHeading()));
 		// set Map markers
@@ -156,8 +156,8 @@ public class MainActivity extends FragmentActivity implements LocationListener{
 			@Override
 			public void run() {
 				try {
-					markerController.removeOutOfRange(trainController.getMyPosition(),COLLISION_RANGE);
-
+					List<String> removed=markerController.removeOutOfRange(trainController.getMyPosition(),COLLISION_RANGE);
+					trainController.remove(removed);
 				} catch (Exception e) {
 
 				}

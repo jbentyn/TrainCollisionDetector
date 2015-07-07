@@ -14,8 +14,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.ui.IconGenerator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -81,20 +83,22 @@ public class TrainMarkerController {
         }
     }
 
-    public void removeOutOfRange(TrainData thisTrain, double range) {
+    public List<String> removeOutOfRange(TrainData thisTrain, double range) {
 
         LatLng currentPosition= new LatLng(thisTrain.getLatitude(),thisTrain.getLongitude());
         Iterator<Map.Entry<String,TrainMarker>> iter=trainMarkerMapping.entrySet().iterator();
 
-
+        List<String> result = new ArrayList<>();
         while(iter.hasNext()){
             Map.Entry <String,TrainMarker> entry = iter.next();
             TrainMarker tm = entry.getValue();
             if (SphericalUtil.computeDistanceBetween(currentPosition,tm.getLatLng()) > range){
+                result.add(tm.getTrainData().getId());
                 remove(tm.getTrainData().getId());
                 Log.i(TAG,"Train with ID: "+tm.getTrainData().getId()+" was removed from map");
             }
 
         }
+        return result;
     }
 }
