@@ -8,11 +8,15 @@ import android.widget.Toast;
 import com.bentyn.traincoll.android.MainActivity;
 import com.bentyn.traincoll.android.map.TrainMarkerController;
 import com.bentyn.traincoll.android.train.TrainController;
+import com.bentyn.traincoll.commons.algorithms.CDAlgorithmResponse;
 import com.bentyn.traincoll.commons.communication.Message;
 import com.bentyn.traincoll.commons.communication.MessageType;
 import com.bentyn.traincoll.commons.data.EventData;
 import com.bentyn.traincoll.commons.data.TrainData;
 import com.google.gson.Gson;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import javax.inject.Inject;
 
@@ -27,6 +31,8 @@ public class MessageHandler extends WebSocketHandler{
     MessageController messageController;
     TrainMarkerController markerController;
     TrainController trainController;
+
+    Toast toast;
 
     private boolean open =false;
     @Inject
@@ -59,11 +65,16 @@ public class MessageHandler extends WebSocketHandler{
                 Log.i(TAG, "Train " + train.getId() + " position update was recived");
                 // TODO ADD COLLISION DETECTION HERE
                 trainController.insertOrUpdate(train);
-                boolean isCollision = trainController.checkForCollision(train.getId());
-                if (isCollision){
+                CDAlgorithmResponse algorithResponse = trainController.checkForCollision(train.getId());
+                if (algorithResponse.isDetected()){
                     EventData collisionEventData = new EventData();
+                    Calendar cal = GregorianCalendar.getInstance();
+                    cal.setTimeInMillis(algorithResponse.getCollisionTimestamp());
                     collisionEventData.setPriority("HIGH");
-                    collisionEventData.setText("Collision detected: " + train.getId() + " and " + TrainController.TRAIN_ID);
+                    collisionEventData.setText(
+                            "Collision detected: " + train.getId() + " and " + TrainController.TRAIN_ID+
+                            "./nPredicted time: "+ cal.getTime()
+                    );
 
                     messageController.sendMessage(MessageType.EVENT, collisionEventData);
                     showEvent(collisionEventData);
@@ -95,10 +106,15 @@ public class MessageHandler extends WebSocketHandler{
         Context context = mainActivity;
         int duration = Toast.LENGTH_LONG;
 
-        Toast toast = Toast.makeText(context, event.getText(), duration);
+         showToast(context, event.getText(), duration);
+    }
+    public void showToast (Context context, String text, int duration){
+        if (toast != null) {
+            toast.cancel();
+        }
+        toast = Toast.makeText(context,text ,duration );
         toast.show();
     }
-
     public MessageController getMessageController() {
         return messageController;
     }

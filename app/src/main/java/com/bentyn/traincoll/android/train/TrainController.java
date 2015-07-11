@@ -2,6 +2,7 @@ package com.bentyn.traincoll.android.train;
 
 import com.bentyn.traincoll.commons.algorithms.AbstractCDAlgorithm;
 import com.bentyn.traincoll.commons.algorithms.BasicCDAlgorithm;
+import com.bentyn.traincoll.commons.algorithms.CDAlgorithmResponse;
 import com.bentyn.traincoll.commons.algorithms.FixedSizeQueue;
 import com.bentyn.traincoll.commons.data.TrainData;
 import com.bentyn.traincoll.commons.utils.GeoUtils;
@@ -16,9 +17,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TrainController {
     public static final String TRAIN_ID="TRAIN_A";
     private final static int TRAIN_QUEUE_SIZE=10;
+
+    private static final double PRECISION=1;
+    private static final long TIME_PRECISION=1000;
+    private static final double SPEED_PRECISION=0.01;
     private Map<String,FixedSizeQueue<TrainData>>  trainsData = new ConcurrentHashMap<>();
     private FixedSizeQueue<TrainData> myPositions = new FixedSizeQueue<>(TRAIN_QUEUE_SIZE);
-    private AbstractCDAlgorithm algorithm = new BasicCDAlgorithm();
+    private AbstractCDAlgorithm algorithm = new BasicCDAlgorithm(PRECISION,TIME_PRECISION,SPEED_PRECISION);
 
     public void insertOrUpdate(TrainData trainData){
         if(trainsData.containsKey(trainData.getId())){
@@ -43,7 +48,7 @@ public class TrainController {
         return trainsData.get(trainId);
     }
 
-    public boolean checkForCollision(String trainId){
+    public CDAlgorithmResponse checkForCollision(String trainId){
         FixedSizeQueue<TrainData> otherPositions = getDataForTrain(trainId);
         return algorithm.checkCollision(myPositions, otherPositions);
     }
